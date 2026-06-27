@@ -1,0 +1,8 @@
+{
+  "SMTP_SERVER": "smtp-relay.brevo.com",
+  "SMTP_PORT": 587,
+  "SMTP_USER": "xxx@smtp-brevo.com",
+  "SMTP_PASSWORD": "xxx",
+  "SENDER_EMAIL": "xxx@gmail.com",
+  "RECEIVER_EMAIL": "xxx@gmail.com"
+}
