@@ -1,0 +1,62 @@
+{
+  "SUDIRMAN KITCHEN": {
+    "profile": "OFFICE",
+    "sales_weight": 1.4,
+    "kota": "JAKARTA",
+    "alamat": "JL. JEND. SUDIRMAN NO. 21, KAV 4-5, JAKARTA SELATAN"
+  },
+  "KUNINGAN HUB": {
+    "profile": "OFFICE",
+    "sales_weight": 1.0,
+    "kota": "JAKARTA",
+    "alamat": "MENARA KUNINGAN LANTAI GROUND, KUNINGAN, JAKARTA SELATAN"
+  },
+  "SENOPATI BISTRO": {
+    "profile": "LEISURE",
+    "sales_weight": 1.5,
+    "kota": "JAKARTA",
+    "alamat": "JL. SENOPATI NO. 8B, KEBAYORAN BARU, JAKARTA SELATAN"
+  },
+  "DAGO HERITAGE": {
+    "profile": "LEISURE",
+    "sales_weight": 1.2,
+    "kota": "BANDUNG",
+    "alamat": "JL. IR. H. JUANDA NO. 102, DAGO, BANDUNG"
+  },
+  "TUNJUNGAN PLAZA CORNER": {
+    "profile": "LEISURE",
+    "sales_weight": 1.9,
+    "kota": "SURABAYA",
+    "alamat": "TUNJUNGAN PLAZA 4, LANTAI LG, TEGALSARI, SURABAYA"
+  },
+  "ASIA AFRIKA EXPRESS": {
+    "profile": "OFFICE",
+    "sales_weight": 0.5,
+    "kota": "BANDUNG",
+    "alamat": "JL. ASIA AFRIKA NO. 75, SUMUR BANDUNG, BANDUNG"
+  },
+  "DHARMAHUSADA STATION": {
+    "profile": "LEISURE",
+    "sales_weight": 0.9,
+    "kota": "SURABAYA",
+    "alamat": "JL. DHARMAHUSADA NO. 112, GUBENG, SURABAYA"
+  },
+  "MALIOBORO SIGNATURE": {
+    "profile": "LEISURE",
+    "sales_weight": 1.7,
+    "kota": "YOGYAKARTA",
+    "alamat": "JL. MALIOBORO NO. 42, DANUREJAN, YOGYAKARTA"
+  },
+  "SEMARANG SIMPANG LIMA": {
+    "profile": "LEISURE",
+    "sales_weight": 0.8,
+    "kota": "SEMARANG",
+    "alamat": "KAWASAN SIMPANG LIMA, SEMARANG TENGAH, SEMARANG"
+  },
+  "MEDAN MERDEKA WALK": {
+    "profile": "OFFICE",
+    "sales_weight": 1.1,
+    "kota": "MEDAN",
+    "alamat": "KAWASAN MERDEKA WALK, MEDAN BARAT, MEDAN"
+  }
+}

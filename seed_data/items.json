@@ -1,0 +1,19 @@
+{
+  "KOPI ESPRESSO":     {"satuan": "GR",  "price": 150.0,   "init_qty": 15000, "trigger": 4000, "restock_qty": 10000, "perishable": false, "kategori": "RAW MATERIAL"},
+  "SUSU SEGAR":        {"satuan": "ML",  "price": 25.0,    "init_qty": 20000, "trigger": 5000, "restock_qty": 14000, "perishable": true,  "kategori": "RAW MATERIAL"},
+  "SIRUP AREN":        {"satuan": "ML",  "price": 40.0,    "init_qty": 8000,  "trigger": 2000, "restock_qty": 5000,  "perishable": false, "kategori": "RAW MATERIAL"},
+  "BUBUK MATCHA":      {"satuan": "GR",  "price": 400.0,   "init_qty": 3000,  "trigger": 800,  "restock_qty": 2000,  "perishable": false, "kategori": "RAW MATERIAL"},
+  "SIRUP LEMON":       {"satuan": "ML",  "price": 50.0,    "init_qty": 4000,  "trigger": 1000, "restock_qty": 3000,  "perishable": false, "kategori": "RAW MATERIAL"},
+  "GULA CAIR":         {"satuan": "ML",  "price": 15.0,    "init_qty": 10000, "trigger": 2000, "restock_qty": 5000,  "perishable": false, "kategori": "RAW MATERIAL"},
+  "TEPUNG TERIGU":     {"satuan": "GR",  "price": 12.0,    "init_qty": 10000, "trigger": 2000, "restock_qty": 8000,  "perishable": false, "kategori": "RAW MATERIAL"},
+  "ADONAN CROISSANT":  {"satuan": "PCS", "price": 8000.0,  "init_qty": 80,    "trigger": 20,   "restock_qty": 60,    "perishable": true,  "kategori": "RAW MATERIAL"},
+  "KENTANG BEKU":      {"satuan": "GR",  "price": 40.0,    "init_qty": 10000, "trigger": 2500, "restock_qty": 8000,  "perishable": false, "kategori": "RAW MATERIAL"},
+  "CIRENG UNCOOKED":   {"satuan": "PCS", "price": 350.0,   "init_qty": 1000,  "trigger": 200,  "restock_qty": 500,   "perishable": true,  "kategori": "RAW MATERIAL"},
+  "AYAM POTONG":       {"satuan": "PCS", "price": 10000.0, "init_qty": 50,    "trigger": 15,   "restock_qty": 40,    "perishable": true,  "kategori": "RAW MATERIAL"},
+  "BERAS":             {"satuan": "GR",  "price": 15.0,    "init_qty": 15000, "trigger": 4000, "restock_qty": 10000, "perishable": false, "kategori": "RAW MATERIAL"},
+  "MIE BASAH":         {"satuan": "GR",  "price": 20.0,    "init_qty": 5000,  "trigger": 1200, "restock_qty": 4000,  "perishable": true,  "kategori": "RAW MATERIAL"},
+  "BUMBU AYAM":        {"satuan": "GR",  "price": 100.0,   "init_qty": 3000,  "trigger": 800,  "restock_qty": 2000,  "perishable": true,  "kategori": "BUMBU"},
+  "BUMBU NASI GORENG": {"satuan": "GR",  "price": 85.0,    "init_qty": 5000,  "trigger": 1000, "restock_qty": 3000,  "perishable": true,  "kategori": "BUMBU"},
+  "BUMBU MIE GORENG":  {"satuan": "GR",  "price": 90.0,    "init_qty": 4000,  "trigger": 1000, "restock_qty": 3000,  "perishable": true,  "kategori": "BUMBU"},
+  "SAUS RUJAK CAIR":   {"satuan": "GR",  "price": 60.0,    "init_qty": 3000,  "trigger": 600,  "restock_qty": 2000,  "perishable": true,  "kategori": "RAW MATERIAL"}
+}

@@ -1,0 +1,364 @@
+version: '3.8'
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  minio_data:
+  clickhouse_data:
+  jupyter_data:
+  airflow_data:
+
+services:
+
+  # 1. OPERATIONAL DATABASE
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: erp
+    ports:
+      - "5433:5432"
+    command: ["postgres", "-c", "wal_level=logical"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d erp"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - network
+
+  # 2. MESSAGE BROKER
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:29093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      # WAJIB untuk single-broker: mencegah timeout 90 detik saat POST /connectors
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server kafka:29092 --list"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+
+  # 3. KAFKA CONNECT (S3 SINK)
+  kafka-connect:
+    image: confluentinc/cp-kafka-connect:7.5.0
+    container_name: kafka_connect
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:29092
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: "connect-cluster"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect"
+      CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
+      CONNECT_OFFSET_STORAGE_TOPIC: "connect-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "connect-status"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+    volumes:
+      - ./kafka_plugins:/usr/share/confluent-hub-components
+    command:
+      - bash
+      - -c
+      - |
+        if [ ! -d "/usr/share/confluent-hub-components/confluentinc-kafka-connect-s3" ]; then
+          confluent-hub install --no-prompt confluentinc/kafka-connect-s3:10.5.1
+          confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.7.4
+        fi
+        /etc/confluent/docker/run
+    networks:
+      - network
+
+  # 4. KAFKA UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka_ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - network
+
+  # 5. OBJECT STORAGE (MinIO)
+  minio:
+    image: minio/minio:RELEASE.2023-11-01T18-37-25Z
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - network
+
+  # Auto-create bucket saat MinIO pertama kali berjalan
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      do sleep 2; done;
+      mc mb myminio/raw-data-erp || true;
+      exit 0;
+      "
+    networks:
+      - network
+
+  # Auto-register ALL S3 Sink Connectors ke Kafka Connect
+  datalake-init:
+    image: curlimages/curl
+    depends_on:
+      - kafka-connect
+    volumes:
+      - ./datalake:/datalake
+    entrypoint:
+      - sh
+      - -c
+      - |
+        until curl -sf http://kafka-connect:8083/connectors; do
+          echo "⏳ Waiting for Kafka Connect to be fully ready..."
+          sleep 3
+        done
+        
+        echo "✅ Kafka Connect is up! Starting bulk registration..."
+        sleep 5
+        
+        # Melakukan looping untuk mendaftarkan setiap file json di dalam folder /datalake
+        for file in /datalake/*.json; do
+          if [ -f "$$file" ]; then
+            echo "🚀 Registering connector from: $$file"
+            curl -X POST \
+              -H "Content-Type: application/json" \
+              --data @"$$file" \
+              http://kafka-connect:8083/connectors
+            echo -e "\n----------------------------------------"
+          fi
+        done
+        echo "🎉 All isolated connectors have been registered successfully!"
+    networks:
+      - network
+
+  # 6. INGESTION LAYER (FastAPI)
+  ingestion:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.10-slim
+        WORKDIR /app
+        RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+        RUN pip install --no-cache-dir fastapi uvicorn pydantic aiokafka
+        COPY ingestion.py .
+        EXPOSE 8000
+        CMD ["uvicorn", "ingestion:app", "--host", "0.0.0.0", "--port", "8000"]
+    container_name: ingestion
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/docs || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    restart: always
+    networks:
+      - network
+
+  # 7. SOURCE LAYER (Data Generator)
+  data-generator:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.10-slim
+        WORKDIR /app
+        RUN pip install --no-cache-dir requests pandas sqlalchemy psycopg2-binary pendulum
+        COPY generator.py .
+        COPY postgre_setup.py .
+        CMD ["python", "-u", "generator.py"]
+    container_name: data_generator
+    volumes:
+      - .:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_healthy
+    restart: always
+    networks:
+      - network
+
+  # 8. CLICKHOUSE (Data Warehouse)
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.8-alpine
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9004:9000"
+    environment:
+      - CLICKHOUSE_USER=clickhouseadmin
+      - CLICKHOUSE_PASSWORD=clickhouseadmin
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--user", "clickhouseadmin", "--password", "clickhouseadmin", "--query", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - network
+
+  # 9. TRANSFORMATION ENGINE (ETL Worker)
+  datawarehouse:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.10-slim
+        WORKDIR /app
+        RUN pip install --no-cache-dir pandas kafka-python clickhouse-driver
+        COPY datawarehouse.py .
+        COPY clickhouse_setup.sql .
+        CMD ["python", "-u", "datawarehouse.py"]
+    container_name: datawarehouse
+    volumes:
+      - .:/app
+    depends_on:
+      kafka:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    restart: always
+    networks:
+      - network
+
+  # 10. SCM ALERT ENGINE (Stock Alert Worker)
+  alert_notif:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.10-slim
+        WORKDIR /app
+        RUN pip install --no-cache-dir kafka-python clickhouse-driver
+        COPY alert_notif.py .
+        CMD ["python", "-u", "alert_notif.py"]
+    container_name: alert_notif
+    volumes:
+      - .:/app
+    depends_on:
+      kafka:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    restart: always
+    networks:
+      - network
+
+  # 11. ORCHESTRATION LAYER (Airflow)
+  airflow:
+    image: apache/airflow:2.7.1-python3.10
+    container_name: airflow
+    ports:
+      - "8085:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:password@postgres/erp
+      - _PIP_ADDITIONAL_REQUIREMENTS=clickhouse-driver openpyxl pendulum
+      - TZ=Asia/Jakarta
+      - AIRFLOW__CORE__DEFAULT_TIMEZONE=Asia/Jakarta
+      - AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE=Asia/Jakarta
+      - AIRFLOW__CORE__D_G_S_ARE_PAUSED_AT_CREATION=False
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_USER=clickhouseadmin
+      - CLICKHOUSE_PASS=clickhouseadmin
+    volumes:
+      - airflow_data:/opt/airflow
+      - ./dags:/opt/airflow/dags
+      - ./config_email.json:/opt/airflow/config_email.json
+    command: >
+      bash -c "
+      airflow db migrate &&
+      airflow users create --username airflowadmin --password airflowadmin --firstname Data --lastname Engineering --role Admin --email admin@company.com || true &&
+      exec airflow standalone
+      "
+    networks:
+      - network
+
+  # 12. VISUALIZATION LAYER (Dashboard) 
+  dashboard:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.10-slim
+        WORKDIR /app
+        RUN pip install --no-cache-dir dash plotly pandas clickhouse-driver dash-bootstrap-components pendulum
+        COPY dashboard/ ./dashboard/
+        EXPOSE 8050
+        CMD ["python", "-u", "dashboard/app.py"]
+    container_name: dashboard
+    volumes:
+      - .:/app
+    ports:
+      - "8050:8050"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    restart: always
+    networks:
+      - network
+    command: python -u dashboard/app.py

@@ -1,0 +1,41 @@
+{
+  "AYAM": {
+    "JAKARTA":    {"nama": "PT CIOMAS ADISATWA (JABODETABEK)",  "kota": "JAKARTA SELATAN", "alamat": "KAWASAN INDUSTRI PULOGADUNG BLOK H-12"},
+    "BANDUNG":    {"nama": "PT PRIANGAN UNGGAS MAKMUR",          "kota": "BANDUNG",         "alamat": "JL. RUMAH POTONG HEWAN NO. 45, CIMAHI"},
+    "SURABAYA":   {"nama": "PT SATOE FOED INDONESIA",            "kota": "SIDOARJO",        "alamat": "JL. RAYA GEDANGAN KM 14, SIDOARJO"},
+    "YOGYAKARTA": {"nama": "CV MATARAM TERNAK SEJAHTERA",        "kota": "SLEMAN",          "alamat": "JL. KALIURANG KM 12, SLEMAN"},
+    "SEMARANG":   {"nama": "PT CENTRAL POULTRY JAYA",            "kota": "SEMARANG",        "alamat": "KAWASAN INDUSTRI CANDI BLOK D-3"},
+    "MEDAN":      {"nama": "PT SUMATRA AGRO UNGGAS",             "kota": "DELI SERDANG",    "alamat": "JL. MEDAN-TANJUNG MORAWA KM 11.5"},
+    "DEFAULT":    {"nama": "PT UNGGAS PERKASA SEJAHTERA",        "kota": "BEKASI",          "alamat": "JL. RAYA NAROGONG KM 8, BEKASI"}
+  },
+  "SUSU": {
+    "JAKARTA":    {"nama": "PT CISARUA DAIRY FRANCHISE",                     "kota": "BOGOR",        "alamat": "JL. RAYA CISARUA NO. 18, PUNCAK"},
+    "BANDUNG":    {"nama": "KOPERASI PETERNAK SAPI BANDUNG UTARA (KPSBU)",   "kota": "BANDUNG BARAT","alamat": "JL. SERSAN BAJURI NO. 88, LEMBANG"},
+    "SURABAYA":   {"nama": "PT GREENFIELDS INDONESIA B2B",                   "kota": "MALANG",       "alamat": "DESA BABADAN, NGAJUM, MALANG"},
+    "YOGYAKARTA": {"nama": "CV MERAPI DAIRY FARMING",                        "kota": "BOYOLALI",     "alamat": "JL. SOLO-SEMARANG KM 25, BOYOLALI"},
+    "SEMARANG":   {"nama": "PT JAVA FRESH DAIRY",                            "kota": "SALATIGA",     "alamat": "JL. LINGKAR SELATAN SALATIGA NO. 12"},
+    "MEDAN":      {"nama": "PT DELI DAIRY FRESH",                            "kota": "MEDAN",        "alamat": "JL. KLAMBIR V NO. 45, MEDAN"},
+    "DEFAULT":    {"nama": "PT SUMBER SUSU NUSANTARA",                       "kota": "SUKABUMI",     "alamat": "JL. RAYA SUKABUMI KM 5, SUKABUMI"}
+  },
+  "FRESH_FOOD": {
+    "JAKARTA":    {"nama": "PT BATAVIA SEGAR UTAMA",      "kota": "JAKARTA BARAT", "alamat": "JL. OUTER RING ROAD NO. 42, PURI KEMBANGAN"},
+    "BANDUNG":    {"nama": "CV PASUNDAN FOOD CULINARY",   "kota": "BANDUNG",       "alamat": "JL. GEGER KALONG HILIR NO. 17, BANDUNG"},
+    "SURABAYA":   {"nama": "PT EAST JAVA FRESH SUPPLY",   "kota": "SURABAYA",      "alamat": "PERGUDANGAN MARGOMULYO PERMAI BLOK C-9"},
+    "YOGYAKARTA": {"nama": "UD BOGA ROSO MATARAM",        "kota": "YOGYAKARTA",    "alamat": "JL. PARANGTRITIS KM 4, BANTUL"},
+    "SEMARANG":   {"nama": "PT CENTRAL JAVA FRESH FOOD",  "kota": "SEMARANG",      "alamat": "JL. RADEN PATAH NO. 156, SEMARANG"},
+    "MEDAN":      {"nama": "CV TOBA SELERA ALAM",         "kota": "MEDAN",         "alamat": "JL. SISINGAMANGARAJA NO. 201, MEDAN"},
+    "DEFAULT":    {"nama": "PT BOGA FRESH INDONESIA",     "kota": "TANGERANG",     "alamat": "KAWASAN INDUSTRI MANIS JL. MANIS IV NO. 2"}
+  },
+  "KOPI": {
+    "DEFAULT": {"nama": "PT GAYO NUSANTARA ROASTERY CORP",       "kota": "JAKARTA PUSAT", "alamat": "JL. M.H. THAMRIN NO. 11, MENARA THAMRIN LT. 10"}
+  },
+  "MATCHA": {
+    "DEFAULT": {"nama": "MARUKA JAPAN PREMIUM TRADING IMPORTER", "kota": "JAKARTA UTARA", "alamat": "RUKO PANTAI INDAH KAPUK BLOK PIN NO. 5"}
+  },
+  "BERAS": {
+    "DEFAULT": {"nama": "PT FOOD STATION TJIPINANG JAYA",        "kota": "JAKARTA TIMUR", "alamat": "JL. PISANGAN LAMA SELATAN NO. 1, TJIPINANG"}
+  },
+  "GROCERY": {
+    "DEFAULT": {"nama": "PT GLOBAL DISTRIBUSI PANGAN UTAMA",     "kota": "BEKASI",        "alamat": "KAWASAN INDUSTRI MM2100 BLOK DD-3, CIKARANG"}
+  }
+}

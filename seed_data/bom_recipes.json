@@ -1,0 +1,12 @@
+{
+  "ES KOPI SUSU AREN":         [["KOPI ESPRESSO", 18], ["SUSU SEGAR", 120], ["SIRUP AREN", 20], ["GULA CAIR", 10]],
+  "CAFE LATTE":                [["KOPI ESPRESSO", 18], ["SUSU SEGAR", 150], ["GULA CAIR", 10]],
+  "MATCHA LATTE":              [["BUBUK MATCHA", 8],   ["SUSU SEGAR", 150], ["GULA CAIR", 15]],
+  "ICE LEMON TEA":             [["SIRUP LEMON", 25],   ["GULA CAIR", 20]],
+  "CROISSANT PLAIN":           [["ADONAN CROISSANT", 1]],
+  "FRENCH FRIES":              [["KENTANG BEKU", 150]],
+  "CIRENG CRISPY":             [["CIRENG UNCOOKED", 6], ["SAUS RUJAK CAIR", 25]],
+  "AYAM GEPREK SAMBAL BAWANG": [["AYAM POTONG", 1], ["TEPUNG TERIGU", 50], ["BERAS", 100], ["BUMBU AYAM", 25]],
+  "NASI GORENG GILA":          [["BERAS", 120], ["BUMBU NASI GORENG", 30]],
+  "MIE GORENG SPESIAL":        [["MIE BASAH", 150], ["BUMBU MIE GORENG", 25]]
+}

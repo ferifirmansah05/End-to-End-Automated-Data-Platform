@@ -1,0 +1,12 @@
+{
+  "ES KOPI SUSU AREN":         {"kategori": "BEVERAGE", "harga_offline": 20000, "harga_online": 24000},
+  "CAFE LATTE":                {"kategori": "BEVERAGE", "harga_offline": 25000, "harga_online": 30000},
+  "MATCHA LATTE":              {"kategori": "BEVERAGE", "harga_offline": 28000, "harga_online": 33500},
+  "ICE LEMON TEA":             {"kategori": "BEVERAGE", "harga_offline": 15000, "harga_online": 18000},
+  "CROISSANT PLAIN":           {"kategori": "SNACK",    "harga_offline": 22000, "harga_online": 26000},
+  "FRENCH FRIES":              {"kategori": "SNACK",    "harga_offline": 18000, "harga_online": 21500},
+  "CIRENG CRISPY":             {"kategori": "SNACK",    "harga_offline": 15000, "harga_online": 18000},
+  "AYAM GEPREK SAMBAL BAWANG": {"kategori": "FOOD",     "harga_offline": 28000, "harga_online": 33500},
+  "NASI GORENG GILA":          {"kategori": "FOOD",     "harga_offline": 35000, "harga_online": 42000},
+  "MIE GORENG SPESIAL":        {"kategori": "FOOD",     "harga_offline": 30000, "harga_online": 36000}
+}
